@@ -1,0 +1,16 @@
+# .github/workflows/use-remote-evaluation.yml
+name: Use Remote Evaluation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'src/*.py'
+      - 'evaluation/evaluation.py'
+      - 'src/evaluatio/evaluation.py'
+
+jobs:
+  run-remote-evaluation:
+    uses: pn-cap/git-actions-test/.github/workflows/evaluate.yml@main
+    with:
+      python-version: '3.11'
