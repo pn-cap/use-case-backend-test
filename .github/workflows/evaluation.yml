@@ -40,7 +40,17 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const body = `✅ **Workflow Result** xxx `;
+            const fs = require('fs');
+
+            let results = '';
+            if (fs.existsSync('results.md')) {
+              results = fs.readFileSync('results.md', 'utf8');
+            } else {
+              results = 'No results.md file found.';
+            }
+
+            const body = `✅ **Workflow Result**\n\n${results}`;
+            
             github.rest.issues.createComment({
               issue_number: context.payload.pull_request.number,
               owner: context.repo.owner,
