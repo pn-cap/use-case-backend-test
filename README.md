@@ -41,28 +41,21 @@ jobs:
       - name: Run evaluation.py
         run: python evaluation/evaluation.py
         
-      - name: Read results.md
-        id: read_results
-        run: |
-          echo "RESULTS<<EOF" >> $GITHUB_ENV
-          echo ${{ github.actor }} >> $GITHUB_ENV
-          if [ -f results.md ]; then
-            cat results.md  >> $GITHUB_ENV
-          else
-            echo "No results found." >> $GITHUB_ENV
-          fi 
-          echo "EOF" >> $GITHUB_ENV
-
-      - name: Post comment to PR
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          COMMENTS_URL="https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
-          curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
-               -H "Content-Type: application/json" \
-               -d "{\"body\": \"${{ env.RESULTS }}\"}" \
-               "$COMMENTS_URL"
-
+      - name: Comment on PR with results
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const conclusion = '${{ job.status }}';
+            const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+            const body = `✅ **Workflow Result**: \`${conclusion}\`\n🔗 [View full pipeline run](${runUrl})`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
 ```
 
 ## 🚀 Steps Taken
