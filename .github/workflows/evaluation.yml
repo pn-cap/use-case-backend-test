@@ -1,4 +1,4 @@
-# .github/workflows/use-remote-evaluation.yml
+# .github/workflows/evaluation.yml
 name: Use Remote Evaluation
 
 on:
