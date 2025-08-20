@@ -36,9 +36,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const conclusion = '${{ job.status }}';
-            const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
-            const body = `✅ **Workflow Result**: \`${conclusion}\`\n🔗 [View full pipeline run](${runUrl})`;
+            const body = `✅ **Workflow Result** xxx `;
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
