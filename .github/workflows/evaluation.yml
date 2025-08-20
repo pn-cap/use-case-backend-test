@@ -34,17 +34,9 @@ jobs:
         id: read_results
         run: |
           echo "RESULTS<<EOF" >> $GITHUB_ENV
-          echo ${{ github.actor }} >> $GITHUB_ENV
-          {
-              echo "RESULTS<<EOF"
-              echo "pn-cap"
-              if [ -f results.md ]; then
-                cat results.md
-              else
-                echo "No results found."
-              fi
-              echo "EOF"
-          } >> $GITHUB_ENV
+          cat results.md >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: Post comment to PR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
