@@ -4,59 +4,16 @@
 
 This document outlines the steps taken to test the GitHub Actions pipeline by modifying the `evaluation/evaluation.py`. The goal was to verify that the pipeline triggers correctly on pull request events and successfully runs the sample evaluation script.
 
----
 
-## Pipeline structure
+Pipeline structure
 
-```yaml
-# .github/workflows/evaluation.yml
-name: Use Remote Evaluation
+* Checkout repository 
+* Set up Python 
+* Install dependencies 
+* Run evaluation.py 
+* Comment on PR with results
 
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-    paths:
-      - 'src/*.py'
-      - 'evaluation/evaluation.py'
-      - 'src/evaluatio/evaluation.py'
-
-jobs:
-  run-evaluation:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install numpy
-
-      - name: Run evaluation.py
-        run: python evaluation/evaluation.py
-        
-      - name: Comment on PR with results
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const conclusion = '${{ job.status }}';
-            const runUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
-            const body = `✅ **Workflow Result**: \`${conclusion}\`\n🔗 [View full pipeline run](${runUrl})`;
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body
-            });
-```
+see .github/workflows/evaluation.yml for more details
 
 ## 🚀 Steps Taken
 
@@ -68,6 +25,7 @@ git checkout -b feature/test-pipeline
 ### 2. Update Code
 Modify `evaluation.py`:
 
+(example)
 ```python
 # evaluation/evaluation.py
 with open("results.md", "w") as f:
@@ -126,13 +84,13 @@ Essencially add + commit to PRed branch - evaluation should be rerun***
 gh pr merge <PR id> --squash --delete-branch
 ```
 
-### 7. Pull Latest Changes to Local `main`
+### 7. Pull Latest Changes to Local `main` (optional)
 ```bash
 git checkout main
 git pull origin main
 ```
 
-### 8. Clean Up Feature Branch
+### 8. Clean Up Feature Branch (optional)
 ```bash
 git branch -d feature/test-pipeline
 git push origin --delete feature/test-pipeline

@@ -48,8 +48,9 @@ jobs:
             } else {
               results = 'No results.md file found.';
             }
-
-            const body = `✅ **Workflow Result**\n\n${results}`;
+            const actor = process.env.GITHUB_ACTOR || 'unknown';
+            const runUrl = `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            const body = `✅ **Workflow Result**\n\n${results}\n\n_triggered by **${actor}**_\n\n🔗 [View full pipeline run](${runUrl})`;
             
             github.rest.issues.createComment({
               issue_number: context.payload.pull_request.number,
