@@ -10,7 +10,22 @@ on:
       - 'src/evaluatio/evaluation.py'
 
 jobs:
-  run-remote-evaluation:
-    uses: pn-cap/git-actions-test/.github/workflows/evaluate.yml@main
-    with:
-      python-version: '3.11'
+  run-evaluation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy
+
+      - name: Run evaluation.py
+        run: python evaluation/evaluation.py
