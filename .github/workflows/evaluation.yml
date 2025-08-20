@@ -9,6 +9,10 @@ on:
       - 'evaluation/evaluation.py'
       - 'src/evaluatio/evaluation.py'
 
+permissions:
+  pull-requests: write
+  issues: write
+
 jobs:
   run-evaluation:
     runs-on: ubuntu-latest
