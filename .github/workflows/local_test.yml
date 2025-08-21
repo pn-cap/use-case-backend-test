@@ -1,0 +1,16 @@
+# .github/workflows/test.yml
+name: Test Workflow
+
+on:
+  workflow_dispatch:  # Enables manual trigger
+  push:
+    branches:
+      - feature/test-pipeline
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run a script
+        run: echo "Hello from feature branch!"
