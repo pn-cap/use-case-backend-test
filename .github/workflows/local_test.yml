@@ -1,5 +1,5 @@
 # .github/workflows/test.yml
-name: Test evaluation pipeline workflow
+name: Test workflow
 
 on:
   workflow_dispatch:  # Enables manual trigger

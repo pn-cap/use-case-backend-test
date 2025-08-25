@@ -1,5 +1,5 @@
 # .github/workflows/evaluation.yml
-name: Evaluation Pipeline
+name: 🔁 Call Evaluation Workflow (standard)
 
 on:
   workflow_dispatch:  # Enables manual trigger

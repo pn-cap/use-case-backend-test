@@ -1,5 +1,5 @@
 # .github/workflows/evaluation_parametrized.yml
-name: Evaluation Pipeline (parametrized)
+name: 🔁 Call Evaluation Workflow (parametrized)
 
 on:
   workflow_dispatch:  # Enables manual trigger
