@@ -3,6 +3,27 @@ name: Evaluation Pipeline (parametrized)
 
 on:
   workflow_dispatch:  # Enables manual trigger
+    inputs:
+      python_version:
+        description: "Python version"
+        required: false
+        type: string
+        default: "3.11"
+      working_directory:
+        description: "Working directory"
+        required: false
+        type: string
+        default: "./"
+      requirements_filepath:
+        description: "Filepath for requirements.txt"
+        required: false
+        type: string
+        default: "./requirements.txt"
+      evaluation_filepath:
+        description: "Evaluation filepTH"
+        required: false
+        type: string
+        default: "./evaluation/evaluation.py"
   workflow_call:
     inputs:
       python_version:
