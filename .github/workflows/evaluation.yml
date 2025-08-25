@@ -3,15 +3,15 @@ name: Evaluation Pipeline
 
 on:
   workflow_dispatch:  # Enables manual trigger
-  # push: # Trigger on pushes to feature branches
-  #   branches:
-  #     - 'feature/evaluation-pipeline*' 
-  # pull_request: # Trigger on PRs to main branch
-  #   types: [opened, synchronize, reopened]
-  #   paths:
-  #     - 'src/*.py'
-  #     - 'evaluation/evaluation.py'
-  #     - 'src/evaluatio/evaluation.py'
+  push: # Trigger on pushes to feature branches
+    branches:
+      - 'feature/evaluation-pipeline*' 
+  pull_request: # Trigger on PRs to main branch
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'src/*.py'
+      - 'evaluation/evaluation.py'
+      - 'src/evaluatio/evaluation.py'
 
 permissions:
   pull-requests: write # For commenting on PRs
