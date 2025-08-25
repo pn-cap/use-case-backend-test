@@ -1,42 +1,55 @@
-# .github/workflows/evaluation.yml
-name: Evaluation Pipeline
+# .github/workflows/evaluation_parametrized.yml
+name: Evaluation Pipeline (parametrized)
 
 on:
   workflow_dispatch:  # Enables manual trigger
-  # push: # Trigger on pushes to feature branches
-  #   branches:
-  #     - 'feature/evaluation-pipeline*' 
-  # pull_request: # Trigger on PRs to main branch
-  #   types: [opened, synchronize, reopened]
-  #   paths:
-  #     - 'src/*.py'
-  #     - 'evaluation/evaluation.py'
-  #     - 'src/evaluatio/evaluation.py'
-
+  workflow_call:
+    inputs:
+      python_version:
+        description: "Python version"
+        required: false
+        type: string
+        default: "3.11"
+      working_directory:
+        description: "Working directory"
+        required: false
+        type: string
+        default: "./"
+      requirements_filepath:
+        description: "Filepath for requirements.txt"
+        required: false
+        type: string
+        default: "./requirements.txt"
+      evaluation_filepath:
+        description: "Evaluation filepTH"
+        required: false
+        type: string
+        default: "./evaluation/evaluation.py"
 permissions:
   pull-requests: write # For commenting on PRs
   issues: write # For commenting on issues
-
 jobs:
   run-evaluation:
     runs-on: ubuntu-latest # Use the latest Ubuntu runner
 
     steps:
-      - name: Checkout repository # Check out the code
+        # Check out the code
+      - name: Checkout repository 
         uses: actions/checkout@v3 
 
-      - name: Set up Python # Set up Python environment
+        # Set up Python environment
+      - name: Set up Python 
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: ${{ inputs.python_version }}
 
       - name: Install dependencies  
         run: |
           python -m pip install --upgrade pip
-          pip install numpy
+          pip install -r ${{ inputs.requirements_filepath }}
 
-      - name: Run evaluation.py  
-        run: python evaluation/evaluation.py
+      - name: Run Evaluation
+        run: python ${{ inputs.evaluation_filepath }}
     
       - name: Comment on PR with results  
         if: always()
