@@ -1,31 +1,39 @@
 # 🧪 GitHub Actions Pipeline Test
 
-## 📄 Description
+## 📄 Overview
 
-This document outlines the steps taken to test the GitHub Actions pipeline by modifying the `evaluation/evaluation.py`. The goal was to verify that the pipeline triggers correctly on pull request events and successfully runs the sample evaluation script.
+This document outlines three approaches to testing and running the GitHub Actions pipeline for evaluating `evaluation/evaluation.py`. 
 
+| Approach | Description |
+|---------|-------------|
+| 1️⃣ Standard | Basic pipeline triggered by PR events |
+| 2️⃣ Extended | Parameterized pipeline with manual and reusable triggers |
+| 3️⃣ Extended + Remote Trigger | Parameterized pipeline triggered via `workflow_call` using `evaluation_parametrized_call.yml` |
 
-Pipeline structure
+---
 
-* Checkout repository 
-* Set up Python 
-* Install dependencies 
-* Run evaluation.py 
-* Comment on PR with results
+## 1️⃣ Standard Pipeline (Non-Parametrized)
 
-see .github/workflows/evaluation.yml for more details
+### 🔧 Workflow: `.github/workflows/evaluation.yml`
 
-## 🚀 Steps Taken
+This basic pipeline runs automatically on pull request events and executes a fixed evaluation script.
 
-### 1. Create a Feature Branch
+### 🔁 Pipeline Steps
+
+- Checkout repository  
+- Set up Python  
+- Install dependencies  
+- Run `evaluation.py`  
+- Comment on PR with results  
+
+### 🛠️ Setup & Execution
+
+#### Create Feature Branch
 ```bash
 git checkout -b feature/test-pipeline
 ```
 
-### 2. Update Code
-Modify `evaluation.py`:
-
-(example)
+#### Modify Evaluation Script
 ```python
 # evaluation/evaluation.py
 with open("results.md", "w") as f:
@@ -33,82 +41,53 @@ with open("results.md", "w") as f:
     f.write("test 1")
 ```
 
-### 3. Commit and Push Changes
+#### Commit & Push
 ```bash
 git add evaluation/evaluation.py
 git commit -m "Update evaluation evaluation.py"
 git push -u origin feature/test-pipeline
 ```
 
-### 4. Create Pull Request via GitHub CLI
+#### Create Pull Request
 ```bash
 gh pr create --base main --head feature/test-pipeline \
   --title "Test pipeline with evaluation.py" \
   --body "This PR updates the workflow to run evaluation.py directly for testing purposes."
 ```
 
-### 5. Monitor Workflow Execution
-- Verify that the workflow was triggered on PR creation.
-- Checked the **Actions** tab to confirm successful execution of `evaluation.py`.
-
+#### Monitor Workflow
 ```bash
 gh run list
-```
-
-- ✅ Green check = success
-- ❌ Red X = failure
-- 🟡 Yellow dot = in progress or queue
-
-
-Check the run logs 
-```bash
 gh run view <run-id>
-```
-
-More details 
-```
 gh run view --job=48480668091
 gh run view --log --job=48480668091
 ```
 
-
----
-  
-***<TO be checked: updating the PR>    
-Essencially add + commit to PRed branch - evaluation should be rerun***
-
---- 
-
-### 6. Merge the Pull Request
+#### Merge PR & Cleanup
 ```bash
 gh pr merge <PR id> --squash --delete-branch
-```
-
-### 7. Pull Latest Changes to Local `main` (optional)
-```bash
 git checkout main
 git pull origin main
-```
-
-### 8. Clean Up Feature Branch (optional)
-```bash
 git branch -d feature/test-pipeline
 git push origin --delete feature/test-pipeline
 ```
 
+---
 
-## Evaluation Pipeline (parametrized)
+## 2️⃣ Extended Pipeline (Parametrized)
 
-This workflow (`.github/workflows/evaluation_parametrized.yml`) provides a flexible evaluation pipeline that can be triggered manually or called from other workflows. It supports parameterization for Python version, working directory, requirements file, and evaluation script.
+### 🔧 Workflow: `.github/workflows/evaluation_parametrized.yml`
 
-### Features
+This version introduces flexibility via input parameters and supports manual or reusable triggers.
 
-- **Manual Trigger:** Run the workflow from the GitHub Actions tab or via GitHub CLI (`gh workflow run`) with custom inputs.
-- **Reusable Workflow:** Can be called from other workflows using `workflow_call` and pass inputs.
-- **Parameterization:** Easily change Python version, working directory, requirements file, and evaluation script path.
-- **PR Commenting:** Automatically posts evaluation results as a comment on the pull request when triggered by a PR event.
+### ✨ Features
 
-### Workflow Inputs
+- Manual trigger via GitHub CLI or Actions tab  
+- Reusable via `workflow_call`  
+- Customizable inputs  
+- PR commenting support  
+
+### 🔣 Workflow Inputs
 
 | Input                | Description                       | Default                    |
 |----------------------|-----------------------------------|----------------------------|
@@ -117,9 +96,7 @@ This workflow (`.github/workflows/evaluation_parametrized.yml`) provides a flexi
 | requirements_filepath| Path to requirements.txt          | `./requirements.txt`       |
 | evaluation_filepath  | Path to evaluation script         | `./evaluation/evaluation.py`|
 
-### Example Usage
-
-#### Manual Trigger (GitHub CLI)
+### 🧪 Manual Trigger
 ```bash
 gh workflow run evaluation_parametrized.yml \
   --ref main \
@@ -129,37 +106,40 @@ gh workflow run evaluation_parametrized.yml \
   --field evaluation_filepath="./evaluation/evaluation.py"
 ```
 
-#### Workflow Call (from another workflow)
-```yaml
-jobs:
-  call-evaluation:
-    uses: ./.github/workflows/evaluation_parametrized.yml
-    with:
-      python_version: "3.11"
-      working_directory: "./"
-      requirements_filepath: "./requirements.txt"
-      evaluation_filepath: "./evaluation/evaluation.py"
-    secrets: inherit
-```
+### 🧩 Workflow Steps
 
-### Workflow Steps
-
-1. **Checkout repository**
-2. **Set up Python** (parameterized)
-3. **Install dependencies** from the specified requirements file
-4. **Run evaluation script** at the specified path
-5. **Comment on PR** with results (only for PR events)
-
-#### PR Comment Example
-
-The workflow reads `results.md` and posts its content as a comment on the PR, including the actor and a link to the workflow run.
+1. Checkout repository  
+2. Set up Python (parameterized)  
+3. Install dependencies  
+4. Run evaluation script  
+5. Comment on PR with results  
 
 ---
 
-For the full workflow YAML, see `.github/workflows/evaluation_parametrized.yml`.
+## 3️⃣ Extended Pipeline with Remote Trigger
 
+### 🔧 Workflow: `.github/workflows/evaluation_parametrized_call.yml`
+
+This workflow remotely triggers the parameterized evaluation pipeline using `workflow_call`.
+
+
+### 🧪 Manual Trigger
+```bash
+gh workflow run evaluation_parametrized_call.yml --ref main
+```
+
+This command triggers the `evaluation_parametrized_call.yml` workflow, which in turn calls the reusable evaluation workflow with the specified parameters. 
+
+### 🧩 Workflow Chain
+
+1. `evaluation_parametrized_call.yml` is triggered manually, on PR and branch push 
+2. It invokes `evaluation_parametrized.yml` via `workflow_call`  
+3. Evaluation logic runs with passed parameters  
+4. PR comment is posted if applicable  
+
+---
 
 ## ✅ Expected Outcome
 
-The pipeline was successfully triggered and executed `evaluation.py` as expected.  
-This confirms that the workflow is correctly configured to respond to pull request events and run the evaluation logic.
+All three approaches successfully execute `evaluation.py` and validate the pipeline’s ability to respond to PR events, manual triggers, and remote workflow calls. The third approach ensures modularity and reusability across multiple workflows.
+
