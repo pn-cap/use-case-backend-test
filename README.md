@@ -119,23 +119,31 @@ gh workflow run evaluation_parametrized.yml \
 ## 3️⃣ Extended Pipeline with Remote Trigger
 
 ### 🔧 Workflow: `.github/workflows/evaluation_parametrized_call.yml`
+This workflow demonstrates how to orchestrate both local and remote evaluation pipelines using `workflow_call`. It can be triggered manually, on PR events, or on pushes to feature branches.
 
-This workflow remotely triggers the parameterized evaluation pipeline using `workflow_call`.
+#### ✨ Features
 
+- Manual trigger via GitHub Actions tab or CLI
+- Automatic trigger on PRs and feature branch pushes
+- Runs both a local evaluation workflow and a remote workflow from another repository
+- Passes parameters and secrets to both workflows
 
-### 🧪 Manual Trigger
+#### 🧪 Manual Trigger
+
 ```bash
 gh workflow run evaluation_parametrized_call.yml --ref main
 ```
 
-This command triggers the `evaluation_parametrized_call.yml` workflow, which in turn calls the reusable evaluation workflow with the specified parameters. 
+#### 🧩 Workflow Chain
 
-### 🧩 Workflow Chain
+1. **Trigger:** The workflow can be started manually, by PR events, or by pushes to feature branches.
+2. **Local Evaluation:**  
+   - Runs the local parameterized evaluation workflow (`evaluation_parametrized.yml`) with specified inputs.
+3. **Remote Evaluation:**  
+   - Invokes a remote workflow (`evaluation_parametrized_remote.yml`) from the [`pn-cap/remote-workflows-test`](https://github.com/pn-cap/remote-workflows-test) repository, passing the same parameters and secrets.
+4. **PR Commenting:**  
+   - Both workflows can post results as comments on the PR if applicable.
 
-1. `evaluation_parametrized_call.yml` is triggered manually, on PR and branch push 
-2. It invokes `evaluation_parametrized.yml` via `workflow_call`  
-3. Evaluation logic runs with passed parameters  
-4. PR comment is posted if applicable  
 
 ---
 
