@@ -27,7 +27,7 @@ jobs:
       evaluation_filepath: "./evaluation/evaluation.py"
     secrets: inherit  # Passes all secrets from the calling workflow
   trigger-evaluation-remote:
-    uses: pn-cap/remote-workflows-test/.github/workflows/evaluation_parametrized-remote.yml@main
+    uses: pn-cap/remote-workflows-test/.github/workflows/evaluation_parametrized_remote.yml@main
     with:
       python_version: "3.11"
       working_directory: "./"
